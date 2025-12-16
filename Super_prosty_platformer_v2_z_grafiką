@@ -1,0 +1,79 @@
+// spr_gracz_idle (stanie), spr_gracz_walk (chodzenie), spr_gracz_jump (skok). Origin na dole sprite'ów (np. 50% wysokości).
+
+// Event Create (obj_gracz)
+
+grv = 0.2;
+hsp = 0;
+vsp = 0;
+hsp_walk = 4;  // prędkość ruchu ogólna to samo co move_speed w starym
+vsp_jump = -7;
+image_speed = 1;  // prędkość animacji
+
+// Event Step (obj_gracz)
+
+// Pobierz przyciski
+key_right = keyboard_check(vk_right) || keyboard_check(ord("D"));
+key_left = keyboard_check(vk_left) || keyboard_check(ord("A"));
+key_jump = keyboard_check_pressed(vk_space) || keyboard_check_pressed(ord("W"));
+
+// Ruch poziomy
+hsp = (key_right - key_left) * hsp_walk;  // prosta lepsza logika ruchu
+
+// Grawitacja
+vsp += grv;
+
+// Skok (tylko gdy na ziemi)
+if (place_meeting(x, y + 1, obj_blok) && key_jump) {
+    vsp = vsp_jump;
+}
+
+// ANIMACJE - na końcu Step, po kolizjach
+// Odwrócenie sprite'a
+if (key_right || key_left) {
+    image_xscale = 1;
+} else if (hsp != 0) {
+    image_xscale = -1;  // jeśli hsp > 0 idź w prawo, < 0 w lewo
+}
+
+// Logika animacji
+if (!place_meeting(x, y + 1, obj_blok)) {
+    // W powietrzu - animacja skoku
+    sprite_index = spr_gracz_jump;
+    image_speed = 1;
+    if (vsp > 0) image_index = 1;  // druga klatka przy spadaniu (opcjonalnie)
+} else {
+    if (hsp != 0) {
+        // Chodzenie
+        sprite_index = spr_gracz_walk;
+        image_speed = 1;
+    } else {
+        // Stanie
+        sprite_index = spr_gracz_idle;
+        image_speed = 0.5;
+    }
+}
+
+// Kolizja pozioma (bez zmian)
+var onepixel = sign(hsp);
+if (place_meeting(x + hsp, y, obj_blok)) {
+    while (!place_meeting(x + onepixel, y, obj_blok)) {
+        x += onepixel;
+    }
+    hsp = 0;
+}
+x += hsp;
+
+// Kolizja pionowa (bez zmian)
+onepixel = sign(vsp);
+if (place_meeting(x, y + vsp, obj_blok)) {
+    while (!place_meeting(x, y + onepixel, obj_blok)) {
+        y += onepixel;
+    }
+    vsp = 0;
+}
+y += vsp;
+
+// Restart pokoju przy upadku
+if (y > room_height) {
+    room_restart();
+}
