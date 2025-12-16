@@ -6,48 +6,48 @@ Klawisze: ← → oraz SPACJA
 //////////////////////////////////////////////////////////////////
 zdarzenie - CREATE EVENT – obj_player
 // prędkości
-move_speed = 4;
-jump_power = 8;
+move_speed = 4;    // prędkość ruchu ogólna/przesunięcie kroków
+jump_power = 8;    // siła skoku
 
 // grawitacja
-gravity = 0.4;
-vsp = 0;
-hsp = 0;
+gravity = 0.4;    //siła grawitacji
+vsp = 0;    // prędkość w pione - w górę + w dół
+hsp = 0;    // prędkość w kierunku poziomym - w lewo + w prawi
 //////////////////////////////////////////////////////////////////
 STEP EVENT – obj_player
 ⬅➡ RUCH LEWO / PRAWO
-hsp = 0;
+hsp = 0; // prędkość w poziomie 0 czyli stanie
 
 if (keyboard_check(vk_left)) {
-    hsp = -move_speed;
+    hsp = -move_speed; // nadaje minus do prędkości ruchu ogólnej czyli player pójdzie w lewo
 }
 
 if (keyboard_check(vk_right)) {
-    hsp = move_speed;
+    hsp = move_speed; // nadaje po prostu prędkość ruchu ogólnej czyli player pójdzie w prawo
 }
 
 // GRAWITACJA
-vsp += gravity;
+vsp += gravity;    // nadaje prędkość w pionie równą grawitacji -> vsp = vsp + gravity
 
 // SKOK (TYLKO GDY STOI NA ZIEMI)
-if (keyboard_check_pressed(vk_space)) {
-    if (place_meeting(x, y + 1, obj_solid)) {
+if (keyboard_check_pressed(vk_space)) {    // sprawdza czy została naciśnięta spacja
+    if (place_meeting(x, y + 1, obj_solid)) {    // jeśli pod postacię jest blok to zmienia prędkość pionową odejmuje siłę skoku
         vsp = -jump_power;
     }
 }
 
 //KOLIZJE
 //Ruch poziomy
-x += hsp;
+x += hsp;    // powoduje że zmienna x która jest pozycją poziomą zmienia się o hsp czyli naszą prędkość poziomą z kierunkiem
 
-if (place_meeting(x, y, obj_solid)) {
+if (place_meeting(x, y, obj_solid)) {    // jeśli napotka przeszkodę w poziomie to cofa o hsp playera
     x -= hsp;
 }
 
 //Ruch pionowy
-y += vsp;
+y += vsp;     // powoduje że zmienna y która jest pozycją pionową zmienia się o ysp czyli naszą prędkość pionową z kierunkiem
 
-if (place_meeting(x, y, obj_solid)) {
+if (place_meeting(x, y, obj_solid)) {    // jeśli napotka przeszkodę w pionie to cofa o ysp playera
     y -= vsp;
     vsp = 0;
 }
