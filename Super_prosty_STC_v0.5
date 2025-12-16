@@ -1,0 +1,58 @@
+// dwa obiekty: obj_player (gracz) i obj_car (samochód). Ustaw sprite'y z stworzyć 4 sprite'y po 2-3 frame'y każdy (idle=frame0, chodzenie=frame1-2), dla samochodu prosty sprite. W pokoju ustaw widoczność z góry (View enabled).
+
+// Kod obiektu obj_player (Create Event)
+
+image_speed = 0.5;
+
+// Kod obiektu obj_player (Step Event)
+
+var move_speed = 4;
+
+// Ruch strzałkami
+var h_input = keyboard_check(vk_right) - keyboard_check(vk_left);
+var v_input = keyboard_check(vk_down) - keyboard_check(vk_up);
+
+x += h_input * move_speed;
+y += v_input * move_speed;
+
+// Animacja - prosty if/else
+if (h_input != 0 || v_input != 0) {
+    // Chodzenie
+    if (h_input > 0) sprite_index = spr_player_right;
+    else if (h_input < 0) sprite_index = spr_player_left;
+    else if (v_input > 0) sprite_index = spr_player_down;
+    else sprite_index = spr_player_up;
+    
+    image_speed = 0.5;
+} else {
+    // Idle - pierwszy frame ostatniego sprite'a
+    image_speed = 0;
+    image_index = 0;
+}
+// Kolizja z samochodem - restart pokoju
+if (place_meeting(x, y, obj_car)) {
+    room_restart();
+}
+
+
+//Kod obiektu obj_car (Create Event)
+
+speed = 3;
+direction = 0;  // Porusza się w prawo (można zmienić na 180 dla lewej strony)
+
+
+// Kod obiektu obj_car (Step Event)
+// Automatyczna pętla: po wyjściu z pokoju wraca z lewej
+if (x > room_width + sprite_width) {
+    x = -sprite_width;
+}
+----------------------------
+
+Ustawienia pokoju
+Dodaj obj_player na środku pokoju (np. x=400, y=300).
+
+Dodaj obj_car na lewej krawędzi (np. x=-50, y=200).
+
+Włącz View 0 w Room Editor (Viewport: 0,0,1024,768).
+
+Ustaw Persistent: false dla restartu.
