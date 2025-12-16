@@ -1,0 +1,76 @@
+ZAŁOŻENIA Platformówka 2D
+
+Gracz: obj_player
+Podłoże/ściany: obj_solid
+Klawisze: ← → oraz SPACJA
+//////////////////////////////////////////////////////////////////
+zdarzenie - CREATE EVENT – obj_player
+// prędkości
+move_speed = 4;
+jump_power = 8;
+
+// grawitacja
+gravity = 0.4;
+vsp = 0;
+hsp = 0;
+//////////////////////////////////////////////////////////////////
+STEP EVENT – obj_player
+⬅➡ RUCH LEWO / PRAWO
+hsp = 0;
+
+if (keyboard_check(vk_left)) {
+    hsp = -move_speed;
+}
+
+if (keyboard_check(vk_right)) {
+    hsp = move_speed;
+}
+
+// GRAWITACJA
+vsp += gravity;
+
+// SKOK (TYLKO GDY STOI NA ZIEMI)
+if (keyboard_check_pressed(vk_space)) {
+    if (place_meeting(x, y + 1, obj_solid)) {
+        vsp = -jump_power;
+    }
+}
+
+//KOLIZJE
+//Ruch poziomy
+x += hsp;
+
+if (place_meeting(x, y, obj_solid)) {
+    x -= hsp;
+}
+
+//Ruch pionowy
+y += vsp;
+
+if (place_meeting(x, y, obj_solid)) {
+    y -= vsp;
+    vsp = 0;
+}
+
+
+CO WARTO ZROZUMIEĆ Z TEGO KODU
+1️⃣ hsp i vsp
+
+To prędkości, a nie pozycja
+➡ najpierw je liczysz, potem dodajesz do x / y
+
+2️⃣ Grawitacja
+vsp += gravity;
+
+
+To jest „ciągnięcie w dół” co klatkę
+
+3️⃣ Skok
+vsp = -jump_power;
+
+
+Minus = do góry (bo Y rośnie w dół)
+
+4️⃣ place_meeting
+
+Sprawdza, czy obiekt dotyka obj_solid
